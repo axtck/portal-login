@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug current test",
+      "request": "launch",
+      "type": "node",
+      "console": "integratedTerminal",
+      "args": ["${fileBasename}"],
+      "program": "${workspaceFolder}/node_modules/jest/bin/jest",
+      "outFiles": ["${workspaceFolder}/**/*.js"],
+      "skipFiles": ["<node_internals>/**"]
+    }
+  ]
+}
