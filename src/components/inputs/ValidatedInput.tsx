@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FC } from 'react';
 import { NativeSyntheticEvent, StyleSheet, Text, TextInput, TextInputFocusEventData } from 'react-native';
 import { Palette, Theme } from '../../types/enums/Color';
 import { paletteToHexColor, themeToHexColor } from '../../utils/color-utils';
@@ -10,27 +10,22 @@ interface IValidatedInputProps {
   placeholder: string;
   label?: string;
   error?: string;
+  secureTextEntry?: boolean;
 }
 
-export const ValidatedInput: FunctionComponent<IValidatedInputProps> = ({
-  onChangeText,
-  onBlur,
-  value,
-  placeholder,
-  label,
-  error,
-}) => {
+export const ValidatedInput: FC<IValidatedInputProps> = (props) => {
   return (
     <React.Fragment>
-      <Text style={styles.label}>{label}</Text>
+      {props.label && <Text style={styles.label}>{props.label}</Text>}
       <TextInput
-        onChangeText={onChangeText}
-        onBlur={onBlur}
-        value={value}
-        placeholder={placeholder}
+        onChangeText={props.onChangeText}
+        onBlur={props.onBlur}
+        value={props.value}
+        placeholder={props.placeholder}
+        secureTextEntry={props.secureTextEntry}
         style={styles.input}
       />
-      <Text style={styles.errorText}>{error}</Text>
+      <Text style={styles.errorText}>{props.error}</Text>
     </React.Fragment>
   );
 };

@@ -3,7 +3,7 @@ import { Palette, Theme } from '../types/enums/Color';
 export const paletteToHexColor = (color: Palette): string => {
   switch (color) {
     case Palette.Primary:
-      return '#1976d2';
+      return '#0076ff';
     case Palette.Secondary:
       return '#aaaaaa';
     case Palette.Info:

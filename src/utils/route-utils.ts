@@ -14,5 +14,7 @@ export const appRouteToTitle = (appRoute: AppRoute): string => {
       return 'Profile';
     case AppRoute.ProfileStack:
       return 'Profile';
+    case AppRoute.LoginStack:
+      return 'Login';
   }
 };

@@ -2,10 +2,10 @@
   "Typescript React Function Component": {
     "prefix": "tsrfc",
     "body": [
-      "import React, { FunctionComponent } from \"react\";",
+      "import React, { FC } from \"react\";",
       "import { View, Text } from \"react-native\";",
       "\ninterface I${TM_FILENAME_BASE}Props {}",
-      "\nexport const $TM_FILENAME_BASE: FunctionComponent<I${TM_FILENAME_BASE}Props> = () => {",
+      "\nexport const $TM_FILENAME_BASE: FC<I${TM_FILENAME_BASE}Props> = () => {",
       "  return (",
       "    <View>",
       "      <Text>$TM_FILENAME_BASE</Text>",

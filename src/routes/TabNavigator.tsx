@@ -1,5 +1,5 @@
 import { BottomTabNavigationOptions, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import React, { FunctionComponent } from 'react';
+import React, { FC } from 'react';
 import { AppRoute } from './types/AppRoute';
 import { MainStack } from './stacks/MainStack';
 import { HomeStack } from './stacks/HomeStack';
@@ -11,7 +11,7 @@ interface ITabNavigatorProps {}
 
 const Tab = createBottomTabNavigator();
 
-export const TabNavigator: FunctionComponent<ITabNavigatorProps> = () => {
+export const TabNavigator: FC<ITabNavigatorProps> = () => {
   return (
     <Tab.Navigator initialRouteName={AppRoute.HomeTab} screenOptions={screenOptions}>
       <Tab.Screen name={AppRoute.MainTab} component={MainStack} options={mainScreenOptions} />

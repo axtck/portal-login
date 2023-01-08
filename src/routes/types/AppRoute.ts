@@ -5,4 +5,5 @@ export enum AppRoute {
   HomeStack = 'HomeStack',
   ProfileTab = 'ProfileTab',
   ProfileStack = 'ProfileStack',
+  LoginStack = 'LoginStack',
 }

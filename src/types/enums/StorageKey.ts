@@ -1,3 +1,4 @@
 export enum StorageKey {
-  JWT = 'JWT',
+  AppContext = '@app_context',
+  LoginToken = '@login_token',
 }

@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FC } from 'react';
 import { NativeSyntheticEvent, StyleSheet, Text, TextInput, TextInputFocusEventData } from 'react-native';
 import { Palette, Theme } from '../../types/enums/Color';
 import { paletteToHexColor, themeToHexColor } from '../../utils/color-utils';
@@ -9,23 +9,19 @@ interface ILabeledInputProps {
   value: string;
   placeholder?: string;
   label?: string;
+  secureTextEntry?: boolean;
 }
 
-export const LabeledInput: FunctionComponent<ILabeledInputProps> = ({
-  onChangeText,
-  onBlur,
-  value,
-  placeholder,
-  label,
-}) => {
+export const LabeledInput: FC<ILabeledInputProps> = (props) => {
   return (
     <React.Fragment>
-      <Text style={styles.label}>{label}</Text>
+      {props.label && <Text style={styles.label}>{props.label}</Text>}
       <TextInput
-        onChangeText={onChangeText}
-        onBlur={onBlur}
-        value={value}
-        placeholder={placeholder}
+        onChangeText={props.onChangeText}
+        onBlur={props.onBlur}
+        value={props.value}
+        placeholder={props.placeholder}
+        secureTextEntry={props.secureTextEntry}
         style={styles.input}
       />
     </React.Fragment>

@@ -1,5 +1,5 @@
 import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import React, { FunctionComponent } from 'react';
+import React, { FC } from 'react';
 import { appRouteToTitle } from '../../utils/route-utils';
 import { Main } from '../../views/main/Main';
 import { AppRoute } from '../types/AppRoute';
@@ -10,7 +10,7 @@ interface IMainStackProps {}
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export const MainStack: FunctionComponent<IMainStackProps> = () => {
+export const MainStack: FC<IMainStackProps> = () => {
   return (
     <Stack.Navigator initialRouteName={AppRoute.MainStack} screenOptions={stackScreenOptions}>
       <Stack.Group>

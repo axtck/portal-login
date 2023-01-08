@@ -2,22 +2,22 @@ import React, { FC } from 'react';
 import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { AppRoute } from '../types/AppRoute';
 import { RootStackParamList } from '../types/RootStackParamList';
-import { Profile } from '../../views/profile/Profile';
 import { stackScreenOptions } from './styles/StackScreenOptions';
 import { appRouteToTitle } from '../../utils/route-utils';
+import { Login } from '../../views/login/Login';
 
-interface IProfileStackProps {}
+interface ILoginStackProps {}
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export const ProfileStack: FC<IProfileStackProps> = () => {
+export const LoginStack: FC<ILoginStackProps> = () => {
   return (
-    <Stack.Navigator initialRouteName={AppRoute.ProfileStack} screenOptions={stackScreenOptions}>
-      <Stack.Screen name={AppRoute.ProfileStack} component={Profile} options={profileStackOptions} />
+    <Stack.Navigator initialRouteName={AppRoute.LoginStack} screenOptions={stackScreenOptions}>
+      <Stack.Screen name={AppRoute.LoginStack} component={Login} options={loginStackOptions} />
     </Stack.Navigator>
   );
 };
 
-const profileStackOptions: NativeStackNavigationOptions = {
-  title: appRouteToTitle(AppRoute.ProfileStack),
+const loginStackOptions: NativeStackNavigationOptions = {
+  title: appRouteToTitle(AppRoute.LoginStack),
 };

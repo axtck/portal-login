@@ -1,4 +1,4 @@
-# Portal
+# Portal login
 
 ## Development
 
@@ -13,6 +13,8 @@ git clone git@github.com:axtck/madhouse-app.git
 ```bash
 npm i
 ```
+
+- copy src/config.ts.sample to the same location and change the name to config.ts, this file is used to set the environment variables
 
 ### VS Code
 

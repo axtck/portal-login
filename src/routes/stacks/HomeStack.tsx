@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FC } from 'react';
 import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { AppRoute } from '../types/AppRoute';
 import { RootStackParamList } from '../types/RootStackParamList';
@@ -10,7 +10,7 @@ interface IHomeStackProps {}
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export const HomeStack: FunctionComponent<IHomeStackProps> = () => {
+export const HomeStack: FC<IHomeStackProps> = () => {
   return (
     <Stack.Navigator initialRouteName={AppRoute.HomeStack} screenOptions={stackScreenOptions}>
       <Stack.Screen name={AppRoute.HomeStack} component={Home} options={homeStackOptions} />
