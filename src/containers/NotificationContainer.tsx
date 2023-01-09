@@ -14,7 +14,7 @@ export const NotificationContainer: FC<INotificationContainerProps> = () => {
       Animated.timing(translation.current, {
         toValue: 0,
         easing: Easing.linear,
-        duration: 1000,
+        duration: notificationContext.duration / 6,
         useNativeDriver: true,
       }).start();
 

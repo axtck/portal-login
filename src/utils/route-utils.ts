@@ -16,5 +16,9 @@ export const appRouteToTitle = (appRoute: AppRoute): string => {
       return 'Settings';
     case AppRoute.LoginStack:
       return 'Login';
+    case AppRoute.SignupScreen:
+      return 'Sign up';
+    default:
+      return 'default';
   }
 };

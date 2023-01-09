@@ -7,6 +7,7 @@ export type RootStackParamList = {
   [AppRoute.HomeStack]: undefined;
   [AppRoute.SettingsStack]: undefined;
   [AppRoute.LoginStack]: undefined;
+  [AppRoute.SignupScreen]: undefined;
 };
 
 export type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>;

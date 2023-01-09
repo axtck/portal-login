@@ -6,4 +6,5 @@ export enum AppRoute {
   SettingsTab = 'SettingsTab',
   SettingsStack = 'SettingsStack',
   LoginStack = 'LoginStack',
+  SignupScreen = 'SignupScreen',
 }

@@ -1,10 +1,9 @@
 import React, { FC } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, TextProps } from 'react-native';
 import { Palette } from '../../types/enums/Color';
 import { paletteToHexTextColor } from '../../utils/color-utils';
 
-interface ITitleTextProps {
-  children: React.ReactNode;
+interface ITitleTextProps extends TextProps {
   color?: Palette;
 }
 

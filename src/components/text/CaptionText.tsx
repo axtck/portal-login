@@ -1,16 +1,15 @@
 import React, { FC } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, TextProps } from 'react-native';
 import { Palette } from '../../types/enums/Color';
 import { paletteToHexTextColor } from '../../utils/color-utils';
 
-interface ICaptionTextProps {
-  children: React.ReactNode;
+interface ICaptionTextProps extends TextProps {
   color?: Palette;
 }
 
 export const CaptionText: FC<ICaptionTextProps> = (props) => {
   return (
-    <Text style={{ ...styles.text, color: paletteToHexTextColor(props.color ?? Palette.Primary) }} {...props}>
+    <Text style={{ ...styles.text, color: paletteToHexTextColor(props.color ?? Palette.Secondary) }} {...props}>
       {props.children}
     </Text>
   );

@@ -11,71 +11,74 @@ import { CaptionText } from '../../components/text/CaptionText';
 import { TitleText } from '../../components/text/TitleText';
 import {
   AppContext,
-  IApp,
   IAppContext,
   initialDangerNotification,
   initialSuccessNotification,
 } from '../../context/AppContext';
 import { AppRoute } from '../../routes/types/AppRoute';
 import { RootStackNavigationProp } from '../../routes/types/RootStackParamList';
-import { StorageKey } from '../../types/enums/StorageKey';
-import { Id } from '../../types/types';
-import { storeObject, storeString } from '../../utils/storage-utils';
 import { RootView } from '../core/RootView';
 
-interface ILoginProps {}
+interface ISignUpProps {}
 
-interface ILoginUser {
-  identifier: string;
+interface ISignupUser {
+  email: string;
+  username: string;
   password: string;
 }
 
-const initialValue: ILoginUser = {
-  identifier: '',
+const initialValue: ISignupUser = {
+  email: '',
+  username: '',
   password: '',
 };
 
 const validationSchema = Yup.object().shape({
-  identifier: Yup.string().required('Email/Username is required'),
+  email: Yup.string().required('Email is required'),
+  username: Yup.string().required('Username is required'),
   password: Yup.string().required('Password is required'),
 });
 
-export const Login: FC<ILoginProps> = () => {
-  const { appContext, setAppContext, setNotificationContext } = useContext<IAppContext>(AppContext);
+export const SignUp: FC<ISignUpProps> = () => {
+  const { setNotificationContext } = useContext<IAppContext>(AppContext);
   const navigation = useNavigation<RootStackNavigationProp>();
 
-  const handleSubmit = async (formValues: ILoginUser): Promise<void> => {
+  const handleSubmit = async (formValues: ISignupUser): Promise<void> => {
     try {
-      const response = await axiosInstance.post<{ userId: Id; token: string }>('/auth/login', formValues);
-      await storeString(StorageKey.LoginToken, response.data.token);
-
-      const updatedContext: IApp = { ...appContext, userId: response.data.userId, isLoggedIn: true };
-      setAppContext(updatedContext);
-      await storeObject<IApp>(StorageKey.AppContext, updatedContext);
-      setNotificationContext({ ...initialSuccessNotification, message: 'Successfully logged in' });
+      await axiosInstance.post('/users', formValues);
+      setNotificationContext({ ...initialSuccessNotification, message: 'Successfully signed up' });
+      navigation.navigate(AppRoute.LoginStack);
     } catch (e: unknown) {
       const axiosError = e as AxiosError;
-      setNotificationContext({ ...initialDangerNotification, message: `${axiosError?.response?.status ?? ''}` });
+      setNotificationContext({ ...initialDangerNotification, message: axiosError?.message });
     }
   };
 
-  const handleNavigateToSignup = () => {
-    navigation.navigate(AppRoute.SignupScreen);
+  const handleNavigateToLogin = () => {
+    navigation.navigate(AppRoute.LoginStack);
   };
 
   return (
     <RootView>
-      <TitleText>Login</TitleText>
+      <TitleText>Sign up</TitleText>
       <Formik initialValues={initialValue} onSubmit={handleSubmit} validationSchema={validationSchema}>
         {({ handleChange, handleBlur, handleSubmit, values, isValid, errors, isSubmitting }) => (
           <View>
             <ValidatedInput
-              placeholder="Email/Username"
-              label="Email/Username"
-              value={values.identifier}
-              onChangeText={handleChange('identifier')}
-              onBlur={handleBlur('identifier')}
-              error={errors.identifier}
+              placeholder="Email"
+              label="Email"
+              value={values.email}
+              onChangeText={handleChange('email')}
+              onBlur={handleBlur('email')}
+              error={errors.email}
+            />
+            <ValidatedInput
+              placeholder="Username"
+              label="Username"
+              value={values.username}
+              onChangeText={handleChange('username')}
+              onBlur={handleBlur('username')}
+              error={errors.username}
             />
             <ValidatedInput
               placeholder="Password"
@@ -86,14 +89,14 @@ export const Login: FC<ILoginProps> = () => {
               error={errors.password}
             />
             <CaptionText style={{ marginBottom: 16, alignSelf: 'center' }}>
-              Don't have an account?{' '}
+              Already have an account?{' '}
               {
-                <CaptionText style={{ color: 'blue' }} onPress={handleNavigateToSignup}>
-                  Sign up
+                <CaptionText style={{ color: 'blue' }} onPress={handleNavigateToLogin}>
+                  Log in
                 </CaptionText>
               }
             </CaptionText>
-            <ActionButton title="login" onPress={handleSubmit} disabled={!isValid} loading={isSubmitting} />
+            <ActionButton title="sign up" onPress={handleSubmit} disabled={!isValid} loading={isSubmitting} />
           </View>
         )}
       </Formik>
