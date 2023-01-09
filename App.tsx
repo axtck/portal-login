@@ -1,6 +1,8 @@
 import { NavigationContainer } from '@react-navigation/native';
+import * as Font from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 import React, { FC, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { axiosInstance } from './src/api/axios';
+import { View } from 'react-native';
 import {
   AppContext,
   IApp,
@@ -14,15 +16,13 @@ import { TabNavigator } from './src/routes/TabNavigator';
 import { StorageKey } from './src/types/enums/StorageKey';
 import { Null } from './src/types/types';
 import { getStoredObject, getStoredString } from './src/utils/storage-utils';
-import * as SplashScreen from 'expo-splash-screen';
-import * as Font from 'expo-font';
-import { View } from 'react-native';
 
 interface IAppProps {}
 
 SplashScreen.preventAutoHideAsync();
 
 const App: FC<IAppProps> = () => {
+  const [appIsReady, setAppIsReady] = useState(false);
   const { appContext: currentAppContext, notificationContext: currentNotificationContext } =
     useContext<IAppContext>(AppContext);
 
@@ -47,48 +47,36 @@ const App: FC<IAppProps> = () => {
   }, [appContext, setAppContext, notificationContext, setNotificationContext]);
 
   useEffect(() => {
-    const checkStoredContext = async () => {
-      const storedGameSettings: Null<IApp> = await getStoredObject<IApp>(StorageKey.AppContext);
-      if (!storedGameSettings) return;
-      setAppContext(storedGameSettings);
-    };
-
-    const checkStoredToken = async () => {
-      const storedToken: Null<string> = await getStoredString(StorageKey.LoginToken);
-      if (!storedToken) return;
-      axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
-    };
-
-    checkStoredContext().catch((e) => e);
-    checkStoredToken().catch((e) => e);
-  }, []);
-
-  const [appIsReady, setAppIsReady] = useState(false);
-
-  useEffect(() => {
     async function prepare() {
       try {
-        //
+        const checkStoredContext = async () => {
+          const storedGameSettings: Null<IApp> = await getStoredObject<IApp>(StorageKey.AppContext);
+          if (!storedGameSettings) return;
+          setAppContext(storedGameSettings);
+        };
+
+        const checkStoredToken = async () => {
+          const storedToken: Null<string> = await getStoredString(StorageKey.LoginToken);
+          if (!storedToken) return;
+        };
+
+        checkStoredContext().catch((e) => e);
+        checkStoredToken().catch((e) => e);
       } catch (e) {
-        console.warn(e);
+        setNotificationContext({ ...initialDangerNotification, message: 'Preparing app failed' });
       } finally {
-        // Tell the application to render
         setAppIsReady(true);
       }
     }
 
-    void prepare();
+    prepare().catch((e) => e);
   }, []);
 
   const onLayoutRootView = useCallback(async () => {
-    if (appIsReady) {
+    if (appIsReady && fontsLoaded) {
       await SplashScreen.hideAsync();
     }
-  }, [appIsReady]);
-
-  if (!appIsReady) {
-    return null;
-  }
+  }, [appIsReady, fontsLoaded]);
 
   if (!appIsReady) return null;
 
