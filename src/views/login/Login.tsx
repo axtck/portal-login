@@ -1,12 +1,12 @@
 import { AxiosError } from 'axios';
 import { Formik } from 'formik';
 import React, { FC, useContext } from 'react';
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
 import * as Yup from 'yup';
 import { axiosInstance } from '../../api/axios';
 import { ActionButton } from '../../components/buttons/ActionButton';
 import { ValidatedInput } from '../../components/inputs/ValidatedInput';
-import { NotificationContainer } from '../../containers/NotificationContainer';
+import { TitleText } from '../../components/text/TitleText';
 import {
   AppContext,
   IApp,
@@ -14,10 +14,10 @@ import {
   initialDangerNotification,
   initialSuccessNotification,
 } from '../../context/AppContext';
-import { Palette } from '../../types/enums/Color';
 import { StorageKey } from '../../types/enums/StorageKey';
 import { Id } from '../../types/types';
 import { storeObject, storeString } from '../../utils/storage-utils';
+import { RootView } from '../core/RootView';
 
 interface ILoginProps {}
 
@@ -54,8 +54,8 @@ export const Login: FC<ILoginProps> = () => {
     }
   };
   return (
-    <ScrollView>
-      <NotificationContainer />
+    <RootView>
+      <TitleText>Login</TitleText>
       <Formik initialValues={initialValue} onSubmit={handleSubmit} validationSchema={validationSchema}>
         {({ handleChange, handleBlur, handleSubmit, values, isValid, errors, isSubmitting }) => (
           <View>
@@ -79,6 +79,6 @@ export const Login: FC<ILoginProps> = () => {
           </View>
         )}
       </Formik>
-    </ScrollView>
+    </RootView>
   );
 };

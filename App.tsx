@@ -27,6 +27,7 @@ const App: FC<IAppProps> = () => {
     useContext<IAppContext>(AppContext);
 
   const [fontsLoaded] = Font.useFonts({
+    'Inter-Regular': require('./assets/fonts/Inter-Regular.otf'),
     'Inter-Black': require('./assets/fonts/Inter-Black.otf'),
   });
 
@@ -78,7 +79,7 @@ const App: FC<IAppProps> = () => {
     }
   }, [appIsReady, fontsLoaded]);
 
-  if (!appIsReady) return null;
+  if (!appIsReady || !fontsLoaded) return null;
 
   return (
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>

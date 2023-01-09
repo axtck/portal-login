@@ -1,13 +1,13 @@
 import React, { FC } from 'react';
-import { ScrollView } from 'react-native';
-import { NotificationContainer } from '../../containers/NotificationContainer';
+import { TitleText } from '../../components/text/TitleText';
+import { RootView } from '../core/RootView';
 
 interface IHomeProps {}
 
 export const Home: FC<IHomeProps> = () => {
   return (
-    <ScrollView>
-      <NotificationContainer />
-    </ScrollView>
+    <RootView>
+      <TitleText>Home</TitleText>
+    </RootView>
   );
 };

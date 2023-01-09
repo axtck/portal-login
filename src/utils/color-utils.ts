@@ -17,6 +17,17 @@ export const paletteToHexColor = (color: Palette): string => {
   }
 };
 
+export const paletteToHexTextColor = (color: Palette): string => {
+  switch (color) {
+    case Palette.Primary:
+      return '#333333';
+    case Palette.Secondary:
+      return '#777777';
+    default:
+      return '#333333';
+  }
+};
+
 export const themeToHexColor = (color: Theme): string => {
   switch (color) {
     case Theme.Dark:

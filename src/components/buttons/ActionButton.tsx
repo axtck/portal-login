@@ -41,8 +41,8 @@ const styles = StyleSheet.create({
   buttonText: {
     paddingHorizontal: 8,
     color: 'white',
-    letterSpacing: 2,
+    letterSpacing: 4,
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: 'Inter-Black',
   },
 });

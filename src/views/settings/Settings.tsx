@@ -1,10 +1,9 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React, { FC, useCallback, useContext } from 'react';
-import { Image, ScrollView, Text, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { ActionButton } from '../../components/buttons/ActionButton';
 import { TitleText } from '../../components/text/TitleText';
 import { appConfig } from '../../config';
-import { NotificationContainer } from '../../containers/NotificationContainer';
 import {
   AppContext,
   IApp,
@@ -18,6 +17,7 @@ import { StorageKey } from '../../types/enums/StorageKey';
 import { IUser } from '../../types/models/User';
 import { IUserProfileImage } from '../../types/models/UserProfileImage';
 import { storeObject } from '../../utils/storage-utils';
+import { RootView } from '../core/RootView';
 
 interface ISettingsProps {}
 
@@ -46,24 +46,30 @@ export const Settings: FC<ISettingsProps> = () => {
     setNotificationContext({ ...initialSuccessNotification, message: 'Successfully logged out' });
   };
 
+  const activeImage = userImages?.find((i) => i.isActive);
+
   return (
-    <React.Fragment>
-      <NotificationContainer />
-      <ScrollView contentContainerStyle={styles.container}>
-        {userImages && (
-          <View style={styles.imageContainer}>
-            <Image
-              style={styles.profileImage}
-              source={{
-                uri: `${appConfig.baseUrl}/files/images/user/profile/${userImages.find((i) => i.isActive)?.id}`,
-              }}
-            />
-          </View>
-        )}
-        {userInfo && <TitleText>{userInfo.username}</TitleText>}
-        <ActionButton title="log out" onPress={handleLogout} theme={Palette.Danger} />
-      </ScrollView>
-    </React.Fragment>
+    <RootView>
+      <TitleText>Settings</TitleText>
+      <View style={{ flex: 1 }}>
+        <View style={{ flex: 3, justifyContent: 'space-around', alignItems: 'center' }}>
+          {activeImage && (
+            <View style={styles.imageContainer}>
+              <Image
+                style={styles.profileImage}
+                source={{
+                  uri: `${appConfig.baseUrl}/files/images/user/profile/${activeImage.id}`,
+                }}
+              />
+            </View>
+          )}
+          {userInfo && <TitleText>{userInfo.username}</TitleText>}
+        </View>
+        <View style={{ flex: 4, justifyContent: 'space-around', alignItems: 'center' }}>
+          <ActionButton title="log out" onPress={handleLogout} theme={Palette.Danger} />
+        </View>
+      </View>
+    </RootView>
   );
 };
 
@@ -81,11 +87,6 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'space-around',
   },
   button: {
     marginTop: 16,

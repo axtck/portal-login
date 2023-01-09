@@ -1,7 +1,8 @@
 import React, { FC } from 'react';
 import { NativeSyntheticEvent, StyleSheet, Text, TextInput, TextInputFocusEventData } from 'react-native';
-import { Palette, Theme } from '../../types/enums/Color';
-import { paletteToHexColor, themeToHexColor } from '../../utils/color-utils';
+import { Palette } from '../../types/enums/Color';
+import { paletteToHexColor } from '../../utils/color-utils';
+import { CaptionText } from '../text/CaptionText';
 
 interface IValidatedInputProps {
   onChangeText: (text: string) => void;
@@ -16,7 +17,7 @@ interface IValidatedInputProps {
 export const ValidatedInput: FC<IValidatedInputProps> = (props) => {
   return (
     <React.Fragment>
-      {props.label && <Text style={styles.label}>{props.label}</Text>}
+      {props.label && <CaptionText>{props.label}</CaptionText>}
       <TextInput
         onChangeText={props.onChangeText}
         onBlur={props.onBlur}
@@ -31,12 +32,6 @@ export const ValidatedInput: FC<IValidatedInputProps> = (props) => {
 };
 
 const styles = StyleSheet.create({
-  label: {
-    color: themeToHexColor(Theme.Light),
-    fontSize: 16,
-    marginBottom: 4,
-    marginLeft: 2,
-  },
   input: {
     borderColor: paletteToHexColor(Palette.Secondary),
     borderWidth: 1,
@@ -48,5 +43,6 @@ const styles = StyleSheet.create({
     color: paletteToHexColor(Palette.Danger),
     fontSize: 12,
     marginLeft: 2,
+    marginBottom: 8,
   },
 });

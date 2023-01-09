@@ -1,5 +1,5 @@
-import React, { FC, useContext, useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { FC, useContext, useEffect, useRef } from 'react';
+import { Animated, Easing, StyleSheet, Text } from 'react-native';
 import { AppContext, IAppContext, initialDangerNotification } from '../context/AppContext';
 import { paletteToHexColor } from '../utils/color-utils';
 
@@ -7,20 +7,19 @@ interface INotificationContainerProps {}
 
 export const NotificationContainer: FC<INotificationContainerProps> = () => {
   const { notificationContext, setNotificationContext } = useContext<IAppContext>(AppContext);
-  // const translation = useRef(new Animated.Value(-20)).current;
-
-  // useEffect(() => {
-  //   // TODO: why are animations not working?
-  //   Animated.timing(translation, {
-  //     toValue: 0,
-  //     easing: Easing.linear,
-  //     duration: 1000,
-  //     useNativeDriver: true,
-  //   }).start();
-  // }, []);
+  const translation = useRef(new Animated.Value(-20));
 
   useEffect(() => {
     if (notificationContext.message) {
+      Animated.timing(translation.current, {
+        toValue: 0,
+        easing: Easing.linear,
+        duration: 1000,
+        useNativeDriver: true,
+      }).start();
+
+      translation.current = new Animated.Value(-20);
+
       const timeoutId = setTimeout(() => {
         setNotificationContext(initialDangerNotification);
       }, notificationContext.duration);
@@ -33,23 +32,15 @@ export const NotificationContainer: FC<INotificationContainerProps> = () => {
   return (
     <React.Fragment>
       {notificationContext.message && (
-        // <Animated.View
-        //   style={{
-        //     backgroundColor: paletteToHexColor(notificationContext.theme),
-        //     height: 20,
-        //     transform: [{ translateY: translation }],
-        //   }}
-        // >
-        //   <Text style={styles.notificationMessage}>{notificationContext.message}</Text>
-        // </Animated.View>
-        <View
+        <Animated.View
           style={{
             backgroundColor: paletteToHexColor(notificationContext.theme),
             height: 20,
+            transform: [{ translateY: translation.current }],
           }}
         >
           <Text style={styles.notificationMessage}>{notificationContext.message}</Text>
-        </View>
+        </Animated.View>
       )}
     </React.Fragment>
   );
@@ -58,5 +49,6 @@ export const NotificationContainer: FC<INotificationContainerProps> = () => {
 const styles = StyleSheet.create({
   notificationMessage: {
     color: 'white',
+    alignSelf: 'center',
   },
 });
