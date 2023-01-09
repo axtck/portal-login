@@ -14,6 +14,7 @@ import {
 import { useFetch } from '../../hooks/useFetch';
 import { Palette } from '../../types/enums/Color';
 import { StorageKey } from '../../types/enums/StorageKey';
+import { IProfile } from '../../types/models/Profile';
 import { IUser } from '../../types/models/User';
 import { IUserProfileImage } from '../../types/models/UserProfileImage';
 import { storeObject } from '../../utils/storage-utils';
@@ -24,6 +25,7 @@ interface ISettingsProps {}
 export const Settings: FC<ISettingsProps> = () => {
   const { appContext, setAppContext, setNotificationContext } = useContext<IAppContext>(AppContext);
   const { data: userInfo, error: userInfoError } = useFetch<IUser>('/users/info');
+  const { data: profileInfo, error: profileInfoError } = useFetch<IProfile>('/profiles/info');
   const { data: userImages, error: userImagesError } = useFetch<IUserProfileImage[]>(
     `/files/images/user/${appContext.userId}/profile`,
   );
@@ -33,10 +35,13 @@ export const Settings: FC<ISettingsProps> = () => {
       if (userInfoError) {
         setNotificationContext({ ...initialDangerNotification, message: 'Fetching user data failed' });
       }
+      if (profileInfoError) {
+        setNotificationContext({ ...initialDangerNotification, message: 'Fetching user profile failed' });
+      }
       if (userImagesError) {
         setNotificationContext({ ...initialDangerNotification, message: 'Fetching user images failed' });
       }
-    }, [userInfoError]),
+    }, [userInfoError, profileInfoError, userImagesError]),
   );
 
   const handleLogout = async () => {
@@ -53,16 +58,27 @@ export const Settings: FC<ISettingsProps> = () => {
       <TitleText>Settings</TitleText>
       <View style={{ flex: 1 }}>
         <View style={{ flex: 3, justifyContent: 'space-around', alignItems: 'center' }}>
-          {activeImage && (
-            <View style={styles.imageContainer}>
+          <View style={styles.imageContainer}>
+            {activeImage ? (
               <Image
                 style={styles.profileImage}
                 source={{
                   uri: `${appConfig.baseUrl}/files/images/user/profile/${activeImage.id}`,
                 }}
               />
-            </View>
-          )}
+            ) : (
+              <View
+                style={{
+                  ...styles.profileImage,
+                  backgroundColor: `#${profileInfo?.avatarColor}`,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <TitleText>{userInfo?.username.charAt(0)}</TitleText>
+              </View>
+            )}
+          </View>
           {userInfo && <TitleText>{userInfo.username}</TitleText>}
         </View>
         <View style={{ flex: 4, justifyContent: 'space-around', alignItems: 'center' }}>

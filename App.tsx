@@ -19,7 +19,7 @@ import { getStoredObject, getStoredString } from './src/utils/storage-utils';
 
 interface IAppProps {}
 
-SplashScreen.preventAutoHideAsync();
+void SplashScreen.preventAutoHideAsync();
 
 const App: FC<IAppProps> = () => {
   const [appIsReady, setAppIsReady] = useState(false);
