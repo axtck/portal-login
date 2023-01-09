@@ -10,10 +10,10 @@ export const appRouteToTitle = (appRoute: AppRoute): string => {
       return 'Home';
     case AppRoute.HomeTab:
       return 'Home';
-    case AppRoute.ProfileTab:
-      return 'Profile';
-    case AppRoute.ProfileStack:
-      return 'Profile';
+    case AppRoute.SettingsTab:
+      return 'Settings';
+    case AppRoute.SettingsStack:
+      return 'Settings';
     case AppRoute.LoginStack:
       return 'Login';
   }

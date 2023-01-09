@@ -1,62 +1,71 @@
-import React, { FC } from 'react';
-import { View } from 'react-native';
 import { AxiosError } from 'axios';
 import { Formik } from 'formik';
+import React, { FC, useContext } from 'react';
+import { ScrollView, View } from 'react-native';
 import * as Yup from 'yup';
-import { instance } from '../../api/axios';
+import { axiosInstance } from '../../api/axios';
 import { ActionButton } from '../../components/buttons/ActionButton';
 import { ValidatedInput } from '../../components/inputs/ValidatedInput';
-import { IAppContext } from '../../context/AppContext';
-import { Theme } from '../../types/enums/Color';
+import { NotificationContainer } from '../../containers/NotificationContainer';
+import {
+  AppContext,
+  IApp,
+  IAppContext,
+  initialDangerNotification,
+  initialSuccessNotification,
+} from '../../context/AppContext';
+import { Palette } from '../../types/enums/Color';
 import { StorageKey } from '../../types/enums/StorageKey';
-import { getStoredObject, storeObject, storeString } from '../../utils/storage-utils';
+import { Id } from '../../types/types';
+import { storeObject, storeString } from '../../utils/storage-utils';
 
 interface ILoginProps {}
 
 interface ILoginUser {
-  email: string;
+  identifier: string;
   password: string;
 }
 
 const initialValue: ILoginUser = {
-  email: '',
+  identifier: '',
   password: '',
 };
 
 const validationSchema = Yup.object().shape({
-  // email: Yup.string().email('Invalid email').required('Email is required'),
-  //password: Yup.string().required('Password is required'),
+  identifier: Yup.string().required('Email/Username is required'),
+  password: Yup.string().required('Password is required'),
 });
+
 export const Login: FC<ILoginProps> = () => {
-  const handleSubmit = async (values: ILoginUser): Promise<void> => {
+  const { appContext, setAppContext, setNotificationContext } = useContext<IAppContext>(AppContext);
+
+  const handleSubmit = async (formValues: ILoginUser): Promise<void> => {
     try {
-      const response = await instance.post<string>('/auth/login', {
-        username: values.email,
-        password: values.password,
-      });
-      await storeString(StorageKey.LoginToken, response.data);
-      const currentContext = await getStoredObject<IAppContext>(StorageKey.AppContext);
-      await storeObject<IAppContext>(StorageKey.AppContext, {
-        theme: currentContext?.theme ?? Theme.Dark,
-        isLoggedIn: true,
-      });
+      const response = await axiosInstance.post<{ userId: Id; token: string }>('/auth/login', formValues);
+      await storeString(StorageKey.LoginToken, response.data.token);
+
+      const updatedContext: IApp = { ...appContext, userId: response.data.userId, isLoggedIn: true };
+      setAppContext(updatedContext);
+      await storeObject<IApp>(StorageKey.AppContext, updatedContext);
+      setNotificationContext({ ...initialSuccessNotification, message: 'Successfully logged in' });
     } catch (e: unknown) {
       const axiosError = e as AxiosError;
-      console.log(axiosError?.response?.status);
+      setNotificationContext({ ...initialDangerNotification, message: `${axiosError?.response?.status ?? ''}` });
     }
   };
   return (
-    <Formik initialValues={initialValue} onSubmit={handleSubmit} validationSchema={validationSchema}>
-      {({ handleChange, handleBlur, handleSubmit, values, isValid, errors }) => (
-        <View>
+    <ScrollView>
+      <NotificationContainer />
+      <Formik initialValues={initialValue} onSubmit={handleSubmit} validationSchema={validationSchema}>
+        {({ handleChange, handleBlur, handleSubmit, values, isValid, errors, isSubmitting }) => (
           <View>
             <ValidatedInput
-              placeholder="Email"
-              label="Email"
-              value={values.email}
-              onChangeText={handleChange('email')}
-              onBlur={handleBlur('email')}
-              error={errors.email}
+              placeholder="Email/Username"
+              label="Email/Username"
+              value={values.identifier}
+              onChangeText={handleChange('identifier')}
+              onBlur={handleBlur('identifier')}
+              error={errors.identifier}
             />
             <ValidatedInput
               placeholder="Password"
@@ -66,10 +75,10 @@ export const Login: FC<ILoginProps> = () => {
               onBlur={handleBlur('password')}
               error={errors.password}
             />
-            <ActionButton title="submit" onPress={handleSubmit} disabled={!isValid} />
+            <ActionButton title="submit" onPress={handleSubmit} disabled={!isValid} loading={isSubmitting} />
           </View>
-        </View>
-      )}
-    </Formik>
+        )}
+      </Formik>
+    </ScrollView>
   );
 };

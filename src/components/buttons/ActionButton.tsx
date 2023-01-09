@@ -1,13 +1,14 @@
 import React from 'react';
-import { Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Palette } from '../../types/enums/Color';
 import { paletteToHexColor } from '../../utils/color-utils';
 
 interface IActionButtonProps {
   title: string;
   onPress: () => void;
-  disabled?: boolean;
   theme?: Palette;
+  disabled?: boolean;
+  loading?: boolean;
 }
 
 export const ActionButton: React.FC<IActionButtonProps> = (props) => {
@@ -21,7 +22,11 @@ export const ActionButton: React.FC<IActionButtonProps> = (props) => {
       onPress={props.onPress}
       disabled={props.disabled}
     >
-      <Text style={styles.buttonText}>{props.title.toUpperCase()}</Text>
+      {props.loading ? (
+        <ActivityIndicator size="small" color="white" />
+      ) : (
+        <Text style={styles.buttonText}>{props.title.toUpperCase()}</Text>
+      )}
     </TouchableOpacity>
   );
 };

@@ -3,7 +3,7 @@ export enum AppRoute {
   MainStack = 'MainStack',
   HomeTab = 'HomeTab',
   HomeStack = 'HomeStack',
-  ProfileTab = 'ProfileTab',
-  ProfileStack = 'ProfileStack',
+  SettingsTab = 'SettingsTab',
+  SettingsStack = 'SettingsStack',
   LoginStack = 'LoginStack',
 }

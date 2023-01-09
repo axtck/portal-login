@@ -3,7 +3,7 @@ import React, { FC } from 'react';
 import { AppRoute } from './types/AppRoute';
 import { MainStack } from './stacks/MainStack';
 import { HomeStack } from './stacks/HomeStack';
-import { ProfileStack } from './stacks/ProfileStack';
+import { SettingsStack } from './stacks/SettingsStack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { appRouteToTitle } from '../utils/route-utils';
 
@@ -13,10 +13,10 @@ const Tab = createBottomTabNavigator();
 
 export const TabNavigator: FC<ITabNavigatorProps> = () => {
   return (
-    <Tab.Navigator initialRouteName={AppRoute.HomeTab} screenOptions={screenOptions}>
+    <Tab.Navigator initialRouteName={AppRoute.MainTab} screenOptions={screenOptions}>
       <Tab.Screen name={AppRoute.MainTab} component={MainStack} options={mainScreenOptions} />
       <Tab.Screen name={AppRoute.HomeTab} component={HomeStack} options={homeScreenOptions} />
-      <Tab.Screen name={AppRoute.ProfileTab} component={ProfileStack} options={profileScreenOptions} />
+      <Tab.Screen name={AppRoute.SettingsTab} component={SettingsStack} options={settingsScreenOptions} />
     </Tab.Navigator>
   );
 };
@@ -38,7 +38,7 @@ const homeScreenOptions: BottomTabNavigationOptions = {
   tabBarIcon: ({ size }) => <Ionicons name={'home-outline'} size={size} color="black" />,
 };
 
-const profileScreenOptions: BottomTabNavigationOptions = {
-  title: appRouteToTitle(AppRoute.ProfileTab),
+const settingsScreenOptions: BottomTabNavigationOptions = {
+  title: appRouteToTitle(AppRoute.SettingsTab),
   tabBarIcon: ({ size }) => <Ionicons name={'settings-outline'} size={size} color="black" />,
 };
