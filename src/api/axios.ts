@@ -15,3 +15,9 @@ export const getAuthAxiosInstance = async (): Promise<AxiosInstance> => {
   instance.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
   return instance;
 };
+
+export const getAuthAxiosFileInstance = async (): Promise<AxiosInstance> => {
+  const instance: AxiosInstance = await getAuthAxiosInstance();
+  instance.defaults.headers.post['Content-Type'] = 'multipart/form-data';
+  return instance;
+};

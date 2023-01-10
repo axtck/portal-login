@@ -1,12 +1,13 @@
 import React, { FC, useContext, useEffect, useRef } from 'react';
 import { Animated, Easing, StyleSheet, Text } from 'react-native';
-import { AppContext, IAppContext, initialDangerNotification } from '../context/AppContext';
+import { initialDangerToast, IToastContext, ToastContext } from '../context/ToastContext';
 import { paletteToHexColor } from '../utils/color-utils';
 
 interface INotificationContainerProps {}
 
 export const NotificationContainer: FC<INotificationContainerProps> = () => {
-  const { notificationContext, setNotificationContext } = useContext<IAppContext>(AppContext);
+  const { toastContext: notificationContext, setToastContext: setNotificationContext } =
+    useContext<IToastContext>(ToastContext);
   const translation = useRef(new Animated.Value(-20));
 
   useEffect(() => {
@@ -21,7 +22,7 @@ export const NotificationContainer: FC<INotificationContainerProps> = () => {
       translation.current = new Animated.Value(-20);
 
       const timeoutId = setTimeout(() => {
-        setNotificationContext(initialDangerNotification);
+        setNotificationContext(initialDangerToast);
       }, notificationContext.duration);
       return () => {
         clearTimeout(timeoutId);

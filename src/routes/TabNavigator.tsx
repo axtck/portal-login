@@ -1,11 +1,11 @@
 import { BottomTabNavigationOptions, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { FC } from 'react';
-import { AppRoute } from './types/AppRoute';
-import { MainStack } from './stacks/MainStack';
-import { HomeStack } from './stacks/HomeStack';
-import { SettingsStack } from './stacks/SettingsStack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { appRouteToTitle } from '../utils/route-utils';
+import { HomeStack } from './stacks/HomeStack';
+import { MainStack } from './stacks/MainStack';
+import { SettingsStack } from './stacks/SettingsStack';
+import { AppRoute } from './types/AppRoute';
 
 interface ITabNavigatorProps {}
 

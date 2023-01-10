@@ -9,12 +9,7 @@ import { ActionButton } from '../../components/buttons/ActionButton';
 import { ValidatedInput } from '../../components/inputs/ValidatedInput';
 import { CaptionText } from '../../components/text/CaptionText';
 import { TitleText } from '../../components/text/TitleText';
-import {
-  AppContext,
-  IAppContext,
-  initialDangerNotification,
-  initialSuccessNotification,
-} from '../../context/AppContext';
+import { initialDangerToast, initialSuccessToast, IToastContext, ToastContext } from '../../context/ToastContext';
 import { AppRoute } from '../../routes/types/AppRoute';
 import { RootStackNavigationProp } from '../../routes/types/RootStackParamList';
 import { RootView } from '../core/RootView';
@@ -40,17 +35,17 @@ const validationSchema = Yup.object().shape({
 });
 
 export const SignUp: FC<ISignUpProps> = () => {
-  const { setNotificationContext } = useContext<IAppContext>(AppContext);
+  const { setToastContext } = useContext<IToastContext>(ToastContext);
   const navigation = useNavigation<RootStackNavigationProp>();
 
   const handleSubmit = async (formValues: ISignupUser): Promise<void> => {
     try {
       await axiosInstance.post('/users', formValues);
-      setNotificationContext({ ...initialSuccessNotification, message: 'Successfully signed up' });
+      setToastContext({ ...initialSuccessToast, message: 'Successfully signed up' });
       navigation.navigate(AppRoute.LoginStack);
     } catch (e: unknown) {
       const axiosError = e as AxiosError;
-      setNotificationContext({ ...initialDangerNotification, message: axiosError?.message });
+      setToastContext({ ...initialDangerToast, message: axiosError?.message });
     }
   };
 

@@ -9,13 +9,8 @@ import { ActionButton } from '../../components/buttons/ActionButton';
 import { ValidatedInput } from '../../components/inputs/ValidatedInput';
 import { CaptionText } from '../../components/text/CaptionText';
 import { TitleText } from '../../components/text/TitleText';
-import {
-  AppContext,
-  IApp,
-  IAppContext,
-  initialDangerNotification,
-  initialSuccessNotification,
-} from '../../context/AppContext';
+import { AppContext, IApp, IAppContext } from '../../context/AppContext';
+import { initialDangerToast, initialSuccessToast, IToastContext, ToastContext } from '../../context/ToastContext';
 import { AppRoute } from '../../routes/types/AppRoute';
 import { RootStackNavigationProp } from '../../routes/types/RootStackParamList';
 import { StorageKey } from '../../types/enums/StorageKey';
@@ -41,7 +36,8 @@ const validationSchema = Yup.object().shape({
 });
 
 export const Login: FC<ILoginProps> = () => {
-  const { appContext, setAppContext, setNotificationContext } = useContext<IAppContext>(AppContext);
+  const { appContext, setAppContext } = useContext<IAppContext>(AppContext);
+  const { setToastContext } = useContext<IToastContext>(ToastContext);
   const navigation = useNavigation<RootStackNavigationProp>();
 
   const handleSubmit = async (formValues: ILoginUser): Promise<void> => {
@@ -52,10 +48,10 @@ export const Login: FC<ILoginProps> = () => {
       const updatedContext: IApp = { ...appContext, userId: response.data.userId, isLoggedIn: true };
       setAppContext(updatedContext);
       await storeObject<IApp>(StorageKey.AppContext, updatedContext);
-      setNotificationContext({ ...initialSuccessNotification, message: 'Successfully logged in' });
+      setToastContext({ ...initialSuccessToast, message: 'Successfully logged in' });
     } catch (e: unknown) {
       const axiosError = e as AxiosError;
-      setNotificationContext({ ...initialDangerNotification, message: `${axiosError?.response?.status ?? ''}` });
+      setToastContext({ ...initialDangerToast, message: `${axiosError?.response?.status ?? ''}` });
     }
   };
 

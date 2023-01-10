@@ -8,6 +8,7 @@ export type RootStackParamList = {
   [AppRoute.SettingsStack]: undefined;
   [AppRoute.LoginStack]: undefined;
   [AppRoute.SignupScreen]: undefined;
+  [AppRoute.EditDeleteModal]: undefined;
 };
 
 export type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>;

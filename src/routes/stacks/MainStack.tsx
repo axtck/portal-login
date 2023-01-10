@@ -13,9 +13,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export const MainStack: FC<IMainStackProps> = () => {
   return (
     <Stack.Navigator initialRouteName={AppRoute.MainStack} screenOptions={stackScreenOptions}>
-      <Stack.Group>
-        <Stack.Screen name={AppRoute.MainStack} component={Main} options={mainStackOptions} />
-      </Stack.Group>
+      <Stack.Screen name={AppRoute.MainStack} component={Main} options={mainStackOptions} />
     </Stack.Navigator>
   );
 };

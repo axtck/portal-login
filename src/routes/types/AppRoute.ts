@@ -1,10 +1,18 @@
 export enum AppRoute {
+  // tabs
   MainTab = 'MainTab',
-  MainStack = 'MainStack',
   HomeTab = 'HomeTab',
-  HomeStack = 'HomeStack',
   SettingsTab = 'SettingsTab',
+
+  // stacks
+  MainStack = 'MainStack',
+  HomeStack = 'HomeStack',
   SettingsStack = 'SettingsStack',
   LoginStack = 'LoginStack',
+
+  // screens
   SignupScreen = 'SignupScreen',
+
+  // modals
+  EditDeleteModal = 'EditDeleteModal',
 }
