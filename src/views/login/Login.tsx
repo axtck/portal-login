@@ -1,10 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
-import { AxiosError } from 'axios';
 import { Formik } from 'formik';
 import React, { FC, useContext } from 'react';
 import { View } from 'react-native';
 import * as Yup from 'yup';
-import { axiosInstance } from '../../api/axios';
+import { api } from '../../api/axios';
 import { ActionButton } from '../../components/buttons/ActionButton';
 import { ValidatedInput } from '../../components/inputs/ValidatedInput';
 import { CaptionText } from '../../components/text/CaptionText';
@@ -42,16 +41,15 @@ export const Login: FC<ILoginProps> = () => {
 
   const handleSubmit = async (formValues: ILoginUser): Promise<void> => {
     try {
-      const response = await axiosInstance.post<{ userId: Id; token: string }>('/auth/login', formValues);
+      const response = await api.post<{ userId: Id; token: string }>('/auth/login', formValues);
       await storeString(StorageKey.LoginToken, response.data.token);
 
       const updatedContext: IApp = { ...appContext, userId: response.data.userId, isLoggedIn: true };
       setAppContext(updatedContext);
       await storeObject<IApp>(StorageKey.AppContext, updatedContext);
       setToastContext({ ...initialSuccessToast, message: 'Successfully logged in' });
-    } catch (e: unknown) {
-      const axiosError = e as AxiosError;
-      setToastContext({ ...initialDangerToast, message: `${axiosError?.response?.status ?? ''}` });
+    } catch {
+      setToastContext({ ...initialDangerToast, message: `Loggin in failed` });
     }
   };
 

@@ -3,6 +3,7 @@ import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppContext, IApp, IAppContext, initialAppContext } from './src/context/AppContext';
 import { IModal, IModalContext, initialModalContext, ModalContext } from './src/context/ModalContext';
 import { initialDangerToast, IToast, IToastContext, ToastContext } from './src/context/ToastContext';
@@ -78,15 +79,17 @@ const App: FC<IAppProps> = () => {
   if (!appIsReady || !fontsLoaded) return null;
 
   return (
-    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+    <SafeAreaProvider>
       <AppContext.Provider value={appContextProviderValue}>
         <ToastContext.Provider value={toastContextProviderValue}>
           <ModalContext.Provider value={modalContextProviderValue}>
-            <NavigationContainer>{appContext.isLoggedIn ? <TabNavigator /> : <LoginStack />}</NavigationContainer>
+            <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+              <NavigationContainer>{appContext.isLoggedIn ? <TabNavigator /> : <LoginStack />}</NavigationContainer>
+            </View>
           </ModalContext.Provider>
         </ToastContext.Provider>
       </AppContext.Provider>
-    </View>
+    </SafeAreaProvider>
   );
 };
 

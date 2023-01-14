@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { NotificationContainer } from '../../containers/NotificationContainer';
-import { OptionsModal } from '../modals/generic/OptionsModal';
+import { OptionsModal } from '../modals/OptionsModal';
 
 interface IRootViewProps {
   children: React.ReactNode;

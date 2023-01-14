@@ -1,20 +1,21 @@
-import { useFocusEffect } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
-import React, { FC, useCallback, useContext, useEffect } from 'react';
+import React, { FC, useContext, useEffect, useState } from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { getAuthAxiosFileInstance } from '../../api/axios';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { api } from '../../api/axios';
 import { ActionButton } from '../../components/buttons/ActionButton';
 import { TitleText } from '../../components/text/TitleText';
 import { appConfig } from '../../config';
 import { AppContext, IApp, IAppContext } from '../../context/AppContext';
 import { IModal, IModalContext, initialModalContext, ModalContext, ModalKey } from '../../context/ModalContext';
 import { initialDangerToast, initialSuccessToast, IToastContext, ToastContext } from '../../context/ToastContext';
-import { useFetch } from '../../hooks/useFetch';
 import { Palette } from '../../types/enums/Color';
 import { StorageKey } from '../../types/enums/StorageKey';
 import { IProfile } from '../../types/models/Profile';
 import { IUser } from '../../types/models/User';
+import { IUserInfo } from '../../types/models/UserInfo';
 import { IUserProfileImage } from '../../types/models/UserProfileImage';
+import { Null } from '../../types/types';
 import { storeObject } from '../../utils/storage-utils';
 import { RootView } from '../core/RootView';
 
@@ -31,45 +32,42 @@ const profileImageModalOptions: IModal = {
 };
 
 export const Settings: FC<ISettingsProps> = () => {
-  // const [image, setImage] = useState<Null<ImagePicker.ImagePickerResult>>(null);
   const { appContext, setAppContext } = useContext<IAppContext>(AppContext);
-  const { setToastContext } = useContext<IToastContext>(ToastContext);
   const { modalContext, setModalContext } = useContext<IModalContext>(ModalContext);
-  const { data: userInfo, error: userInfoError } = useFetch<IUser>('/users/info');
-  const { error: profileInfoError } = useFetch<IProfile>('/profiles/info');
-  const { data: userImages, error: userImagesError } = useFetch<IUserProfileImage[]>(
-    `/files/images/user/${appContext.userId}/profile`,
-  );
+  const { setToastContext } = useContext<IToastContext>(ToastContext);
+
+  const [user, setUser] = useState<Null<IUserInfo>>(null);
+  const [image, setImage] = useState<Null<ImagePicker.ImagePickerResult>>(null);
 
   useEffect(() => {
-    if (!modalContext.selectedOption) return;
-    if (modalContext.key === ModalKey.SettingsProfileImage) {
-      const handlePick = async () => {
-        switch (modalContext?.selectedOption?.name) {
-          case 'edit':
-            await pickImage();
-            break;
-          case 'delete':
-            return;
-        }
-      };
-      handlePick().catch((e) => e);
-    }
-  }, [modalContext.selectedOption]);
+    const initializeUser = async () => {
+      try {
+        const userInfo = await api.get<IUser>('/users/info');
+        const profileInfo = await api.get<IProfile>('/profiles/info');
+        const profileImages = await api.get<IUserProfileImage[]>(`/files/images/user/${appContext.userId}/profile`);
 
-  useFocusEffect(
-    useCallback(() => {
-      if (userInfoError) {
+        setUser({ user: userInfo.data, profile: profileInfo.data, profileImages: profileImages.data });
+      } catch {
         setToastContext({ ...initialDangerToast, message: 'Fetching user data failed' });
       }
-      if (profileInfoError) {
-        setToastContext({ ...initialDangerToast, message: 'Fetching user profile failed' });
+    };
+
+    initializeUser().catch((e) => e);
+  }, []);
+
+  useEffect(() => {
+    if (!modalContext.selectedOption || modalContext.key !== ModalKey.SettingsProfileImage) return;
+    const handlePick = async () => {
+      switch (modalContext.selectedOption?.name) {
+        case 'edit':
+          await pickImage();
+          break;
       }
-      if (userImagesError) {
-        setToastContext({ ...initialDangerToast, message: 'Fetching user images failed' });
-      }
-    }, [userInfoError, profileInfoError, userImagesError]),
-  );
+    };
+
+    handlePick().catch((e) => e);
+    // TODO: do we need to reset the context somewhere?
+  }, [modalContext.selectedOption]);
 
   const handleLogout = async () => {
     const updatedContext: IApp = { ...appContext, isLoggedIn: false };
@@ -79,7 +77,6 @@ export const Settings: FC<ISettingsProps> = () => {
   };
 
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -88,15 +85,15 @@ export const Settings: FC<ISettingsProps> = () => {
 
     if (result.canceled) return;
 
-    // setImage(result);
+    setImage(result);
 
     try {
       const { uri, type, fileName } = result.assets[0];
       const formData = new FormData();
-      formData.append('file', { uri: uri, type: type, name: fileName || 'file' } as unknown as string);
+      formData.append('file', { uri: uri, type: type || 'image', name: fileName || 'file' } as unknown as string);
 
-      const authorizedAxiosInstance = await getAuthAxiosFileInstance();
-      await authorizedAxiosInstance.post('/files/images/user/profile', formData);
+      await api.post('/files/images/user/profile', formData, { headers: { 'Content-Type': 'multipart/formdata' } });
+      setToastContext({ ...initialSuccessToast, message: 'Image successfully uploaded' });
     } catch {
       setToastContext({ ...initialDangerToast, message: 'Uploading image failed' });
     }
@@ -106,7 +103,7 @@ export const Settings: FC<ISettingsProps> = () => {
     setModalContext(profileImageModalOptions);
   };
 
-  const activeImage = userImages?.find((i) => i.isActive);
+  const activeImage = user?.profileImages?.find((i) => i.isActive);
 
   return (
     <RootView>
@@ -115,15 +112,19 @@ export const Settings: FC<ISettingsProps> = () => {
         <View style={{ flex: 3, justifyContent: 'space-around', alignItems: 'center' }}>
           <TouchableOpacity onPress={handleOpenProfileImageModal}>
             <View style={styles.imageContainer}>
-              <Image
-                style={styles.profileImage}
-                source={{
-                  uri: `${appConfig.baseUrl}/files/images/user/profile/${activeImage?.id}`,
-                }}
-              />
+              {image?.assets || activeImage ? (
+                <Image
+                  style={styles.profileImage}
+                  source={{
+                    uri: image?.assets?.[0].uri || `${appConfig.baseUrl}/files/images/user/profile/${activeImage?.id}`,
+                  }}
+                />
+              ) : (
+                <Ionicons name="person-outline" size={80} />
+              )}
             </View>
           </TouchableOpacity>
-          {userInfo && <TitleText>{userInfo.username}</TitleText>}
+          {user?.user && <TitleText>{user.user.username}</TitleText>}
         </View>
         <View style={{ flex: 4, justifyContent: 'flex-end' }}>
           <ActionButton title="log out" onPress={handleLogout} theme={Palette.Danger} />

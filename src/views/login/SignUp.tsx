@@ -1,10 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
-import { AxiosError } from 'axios';
 import { Formik } from 'formik';
 import React, { FC, useContext } from 'react';
 import { View } from 'react-native';
 import * as Yup from 'yup';
-import { axiosInstance } from '../../api/axios';
+import { api } from '../../api/axios';
 import { ActionButton } from '../../components/buttons/ActionButton';
 import { ValidatedInput } from '../../components/inputs/ValidatedInput';
 import { CaptionText } from '../../components/text/CaptionText';
@@ -40,12 +39,11 @@ export const SignUp: FC<ISignUpProps> = () => {
 
   const handleSubmit = async (formValues: ISignupUser): Promise<void> => {
     try {
-      await axiosInstance.post('/users', formValues);
+      await api.post('/users', formValues);
       setToastContext({ ...initialSuccessToast, message: 'Successfully signed up' });
       navigation.navigate(AppRoute.LoginStack);
-    } catch (e: unknown) {
-      const axiosError = e as AxiosError;
-      setToastContext({ ...initialDangerToast, message: axiosError?.message });
+    } catch (e) {
+      setToastContext({ ...initialDangerToast, message: 'Signing up failed' });
     }
   };
 
