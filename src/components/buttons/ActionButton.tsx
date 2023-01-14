@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     paddingVertical: 12,
     alignItems: 'center',
-    alignSelf: 'flex-start',
+    // alignSelf: 'flex-start',
   },
   buttonText: {
     paddingHorizontal: 8,

@@ -1,22 +1,22 @@
+import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import React, { FC, useContext, useEffect, useState } from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { api } from '../../api/axios';
-import { ActionButton } from '../../components/buttons/ActionButton';
+import { IconButton } from '../../components/buttons/IconButton';
 import { TitleText } from '../../components/text/TitleText';
 import { appConfig } from '../../config';
-import { AppContext, IApp, IAppContext } from '../../context/AppContext';
+import { AppContext, IAppContext } from '../../context/AppContext';
 import { IModal, IModalContext, initialModalContext, ModalContext, ModalKey } from '../../context/ModalContext';
 import { initialDangerToast, initialSuccessToast, IToastContext, ToastContext } from '../../context/ToastContext';
-import { Palette } from '../../types/enums/Color';
-import { StorageKey } from '../../types/enums/StorageKey';
+import { AppRoute } from '../../routes/types/AppRoute';
+import { RootStackNavigationProp } from '../../routes/types/RootStackParamList';
 import { IProfile } from '../../types/models/Profile';
 import { IUser } from '../../types/models/User';
 import { IUserInfo } from '../../types/models/UserInfo';
 import { IUserProfileImage } from '../../types/models/UserProfileImage';
 import { Null } from '../../types/types';
-import { storeObject } from '../../utils/storage-utils';
 import { RootView } from '../core/RootView';
 
 interface ISettingsProps {}
@@ -24,20 +24,19 @@ interface ISettingsProps {}
 const profileImageModalOptions: IModal = {
   ...initialModalContext,
   title: 'Profile image',
-  options: [
-    { id: 1, name: 'edit' },
-    { id: 2, name: 'delete' },
-  ],
+  options: [{ id: 1, name: 'edit' }],
   key: ModalKey.SettingsProfileImage,
 };
 
 export const Settings: FC<ISettingsProps> = () => {
-  const { appContext, setAppContext } = useContext<IAppContext>(AppContext);
+  const { appContext } = useContext<IAppContext>(AppContext);
   const { modalContext, setModalContext } = useContext<IModalContext>(ModalContext);
   const { setToastContext } = useContext<IToastContext>(ToastContext);
 
   const [user, setUser] = useState<Null<IUserInfo>>(null);
   const [image, setImage] = useState<Null<ImagePicker.ImagePickerResult>>(null);
+
+  const navigation = useNavigation<RootStackNavigationProp>();
 
   useEffect(() => {
     const initializeUser = async () => {
@@ -69,13 +68,6 @@ export const Settings: FC<ISettingsProps> = () => {
     // TODO: do we need to reset the context somewhere?
   }, [modalContext.selectedOption]);
 
-  const handleLogout = async () => {
-    const updatedContext: IApp = { ...appContext, isLoggedIn: false };
-    setAppContext(updatedContext);
-    await storeObject<IApp>(StorageKey.AppContext, updatedContext);
-    setToastContext({ ...initialSuccessToast, message: 'Successfully logged out' });
-  };
-
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -103,13 +95,17 @@ export const Settings: FC<ISettingsProps> = () => {
     setModalContext(profileImageModalOptions);
   };
 
+  const handleModify = () => {
+    navigation.navigate(AppRoute.ModifySettings);
+  };
+
   const activeImage = user?.profileImages?.find((i) => i.isActive);
 
   return (
     <RootView>
       <TitleText>Settings</TitleText>
       <View style={{ flex: 1 }}>
-        <View style={{ flex: 3, justifyContent: 'space-around', alignItems: 'center' }}>
+        <View style={{ flex: 2, alignItems: 'center' }}>
           <TouchableOpacity onPress={handleOpenProfileImageModal}>
             <View style={styles.imageContainer}>
               {image?.assets || activeImage ? (
@@ -125,9 +121,9 @@ export const Settings: FC<ISettingsProps> = () => {
             </View>
           </TouchableOpacity>
           {user?.user && <TitleText>{user.user.username}</TitleText>}
-        </View>
-        <View style={{ flex: 4, justifyContent: 'flex-end' }}>
-          <ActionButton title="log out" onPress={handleLogout} theme={Palette.Danger} />
+          <View style={{ marginTop: 6 }}>
+            <IconButton iconName="settings-outline" onPress={handleModify} />
+          </View>
         </View>
       </View>
     </RootView>

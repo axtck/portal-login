@@ -18,6 +18,8 @@ export const appRouteToTitle = (appRoute: AppRoute): string => {
       return 'Login';
     case AppRoute.SignupScreen:
       return 'Sign up';
+    case AppRoute.ModifySettings:
+      return 'Modify settings';
     default:
       return 'default';
   }

@@ -12,6 +12,7 @@ export enum AppRoute {
 
   // screens
   SignupScreen = 'SignupScreen',
+  ModifySettings = 'ModifySettings',
 
   // modals
   EditDeleteModal = 'EditDeleteModal',
