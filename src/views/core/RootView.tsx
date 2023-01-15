@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { NotificationContainer } from '../../containers/NotificationContainer';
+import { ToastContainer } from '../../containers/ToastContainer';
 import { OptionsModal } from '../modals/OptionsModal';
 
 interface IRootViewProps {
@@ -10,7 +10,7 @@ interface IRootViewProps {
 export const RootView: FC<IRootViewProps> = (props) => {
   return (
     <View style={styles.container}>
-      <NotificationContainer />
+      <ToastContainer />
       <OptionsModal />
       <View style={styles.scroll}>{props.children}</View>
     </View>

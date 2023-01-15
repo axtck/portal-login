@@ -20,6 +20,7 @@ export const initialDangerToast: IToast = {
 
 export const initialSuccessToast: IToast = {
   ...initialDangerToast,
+  message: '',
   theme: Palette.Success,
 };
 

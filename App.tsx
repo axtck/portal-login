@@ -4,6 +4,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { api } from './src/api/axios';
 import { AppContext, IApp, IAppContext, initialAppContext } from './src/context/AppContext';
 import { IModal, IModalContext, initialModalContext, ModalContext } from './src/context/ModalContext';
 import { initialDangerToast, IToast, IToastContext, ToastContext } from './src/context/ToastContext';
@@ -11,6 +12,7 @@ import { LoginStack } from './src/routes/stacks/LoginStack';
 import { TabNavigator } from './src/routes/TabNavigator';
 import { StorageKey } from './src/types/enums/StorageKey';
 import { Null } from './src/types/types';
+import { logAsyncStorage } from './src/utils/debugging-utils';
 import { getStoredObject, getStoredString } from './src/utils/storage-utils';
 
 interface IAppProps {}
@@ -47,6 +49,7 @@ const App: FC<IAppProps> = () => {
   useEffect(() => {
     async function prepare() {
       try {
+        await logAsyncStorage();
         const checkStoredContext = async () => {
           const storedGameSettings: Null<IApp> = await getStoredObject<IApp>(StorageKey.AppContext);
           if (!storedGameSettings) return;
@@ -56,6 +59,7 @@ const App: FC<IAppProps> = () => {
         const checkStoredToken = async () => {
           const storedToken: Null<string> = await getStoredString(StorageKey.LoginToken);
           if (!storedToken) return;
+          api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
         };
 
         checkStoredContext().catch((e) => e);

@@ -1,4 +1,4 @@
-import { IProfile } from './Profile';
+import { IProfile } from './Settings';
 import { IUser } from './User';
 import { IUserProfileImage } from './UserProfileImage';
 

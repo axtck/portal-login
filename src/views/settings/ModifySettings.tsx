@@ -1,11 +1,20 @@
+import { useNavigation } from '@react-navigation/native';
+import { Formik } from 'formik';
 import React, { FC, useContext } from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
+import { api } from '../../api/axios';
 import { ActionButton } from '../../components/buttons/ActionButton';
+import { ActionSwitch } from '../../components/switches/ActionSwitch';
+import { ParagraphText } from '../../components/text/ParagraphText';
 import { TitleText } from '../../components/text/TitleText';
-import { IAppContext, AppContext, IApp } from '../../context/AppContext';
-import { initialSuccessToast, IToastContext, ToastContext } from '../../context/ToastContext';
+import { AppContext, IApp, IAppContext } from '../../context/AppContext';
+import { ISettingsContext, SettingsContext } from '../../context/SettingsContext';
+import { initialDangerToast, initialSuccessToast, IToastContext, ToastContext } from '../../context/ToastContext';
+import { AppRoute } from '../../routes/types/AppRoute';
+import { RootStackNavigationProp } from '../../routes/types/RootStackParamList';
 import { Palette } from '../../types/enums/Color';
 import { StorageKey } from '../../types/enums/StorageKey';
+import { IProfile } from '../../types/models/Settings';
 import { storeObject } from '../../utils/storage-utils';
 import { RootView } from '../core/RootView';
 
@@ -13,7 +22,9 @@ interface IModifySettingsProps {}
 
 export const ModifySettings: FC<IModifySettingsProps> = () => {
   const { appContext, setAppContext } = useContext<IAppContext>(AppContext);
+  const { settingsContext, setSettingsContext } = useContext<ISettingsContext>(SettingsContext);
   const { setToastContext } = useContext<IToastContext>(ToastContext);
+  const navigation = useNavigation<RootStackNavigationProp>();
 
   const handleLogout = async () => {
     const updatedContext: IApp = { ...appContext, isLoggedIn: false };
@@ -22,12 +33,43 @@ export const ModifySettings: FC<IModifySettingsProps> = () => {
     setToastContext({ ...initialSuccessToast, message: 'Successfully logged out' });
   };
 
+  const handleSubmit = async (values: IProfile) => {
+    try {
+      await api.put('/profiles', values);
+      setSettingsContext({ profile: values });
+      setToastContext({ ...initialSuccessToast, message: 'Successfully updated settings' });
+      navigation.navigate(AppRoute.SettingsStack);
+    } catch {
+      setToastContext({ ...initialDangerToast, message: 'Updating settings failed' });
+    }
+  };
+
   return (
     <RootView>
       <TitleText>Modify settings</TitleText>
-      <View style={{ flex: 2, justifyContent: 'flex-end' }}>
-        <ActionButton title="log out" onPress={handleLogout} theme={Palette.Danger} />
-      </View>
+      <Formik initialValues={settingsContext.profile} onSubmit={handleSubmit}>
+        {({ handleSubmit, setFieldValue, values, dirty }) => (
+          <View style={{ marginTop: 12, flex: 1 }}>
+            <View style={{ flexDirection: 'row', flex: 4 }}>
+              <View style={{ flex: 4 }}>
+                <ParagraphText>Display username</ParagraphText>
+              </View>
+              <View style={{ flex: 1, alignItems: 'flex-end' }}>
+                <ActionSwitch
+                  value={values.shouldDisplayUsername}
+                  onValueChange={(value: unknown) => setFieldValue('shouldDisplayUsername', value)}
+                />
+              </View>
+            </View>
+            <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+              {dirty && <ActionButton title="save" onPress={handleSubmit} />}
+              <View style={{ marginTop: 6 }}>
+                <ActionButton title="log out" onPress={handleLogout} theme={Palette.Danger} />
+              </View>
+            </View>
+          </View>
+        )}
+      </Formik>
     </RootView>
   );
 };

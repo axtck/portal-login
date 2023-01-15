@@ -9,6 +9,7 @@ export interface IModalOption {
 export enum ModalKey {
   None,
   SettingsProfileImage,
+  ConfirmChangeSettings,
 }
 
 export interface IModal {

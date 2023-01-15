@@ -3,44 +3,43 @@ import { Animated, Easing, StyleSheet, Text } from 'react-native';
 import { initialDangerToast, IToastContext, ToastContext } from '../context/ToastContext';
 import { paletteToHexColor } from '../utils/color-utils';
 
-interface INotificationContainerProps {}
+interface IToastContainerProps {}
 
-export const NotificationContainer: FC<INotificationContainerProps> = () => {
-  const { toastContext: notificationContext, setToastContext: setNotificationContext } =
-    useContext<IToastContext>(ToastContext);
+export const ToastContainer: FC<IToastContainerProps> = () => {
+  const { toastContext, setToastContext } = useContext<IToastContext>(ToastContext);
   const translation = useRef(new Animated.Value(-20));
 
   useEffect(() => {
-    if (notificationContext.message) {
+    if (toastContext.message) {
       Animated.timing(translation.current, {
         toValue: 0,
         easing: Easing.linear,
-        duration: notificationContext.duration / 6,
+        duration: toastContext.duration / 6,
         useNativeDriver: true,
       }).start();
 
       translation.current = new Animated.Value(-20);
 
       const timeoutId = setTimeout(() => {
-        setNotificationContext(initialDangerToast);
-      }, notificationContext.duration);
+        setToastContext(initialDangerToast);
+      }, toastContext.duration);
       return () => {
         clearTimeout(timeoutId);
       };
     }
-  }, [notificationContext.message]);
+  }, [toastContext.message]);
 
   return (
     <React.Fragment>
-      {notificationContext.message && (
+      {toastContext.message && (
         <Animated.View
           style={{
-            backgroundColor: paletteToHexColor(notificationContext.theme),
+            backgroundColor: paletteToHexColor(toastContext.theme),
             height: 20,
             transform: [{ translateY: translation.current }],
           }}
         >
-          <Text style={styles.notificationMessage}>{notificationContext.message}</Text>
+          <Text style={styles.toastMessage}>{toastContext.message}</Text>
         </Animated.View>
       )}
     </React.Fragment>
@@ -48,7 +47,7 @@ export const NotificationContainer: FC<INotificationContainerProps> = () => {
 };
 
 const styles = StyleSheet.create({
-  notificationMessage: {
+  toastMessage: {
     color: 'white',
     alignSelf: 'center',
   },
