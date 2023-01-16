@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { Formik } from 'formik';
-import React, { FC, useContext } from 'react';
+import React, { FC, useContext, useState } from 'react';
 import { View } from 'react-native';
 import { api } from '../../api/axios';
 import { ActionButton } from '../../components/buttons/ActionButton';
@@ -17,6 +17,7 @@ import { StorageKey } from '../../types/enums/StorageKey';
 import { IProfile } from '../../types/models/Settings';
 import { storeObject } from '../../utils/storage-utils';
 import { RootView } from '../core/RootView';
+import { ConfirmModal, ConfirmModalOption } from '../modals/ConfirmModal';
 
 interface IModifySettingsProps {}
 
@@ -24,6 +25,10 @@ export const ModifySettings: FC<IModifySettingsProps> = () => {
   const { appContext, setAppContext } = useContext<IAppContext>(AppContext);
   const { settingsContext, setSettingsContext } = useContext<ISettingsContext>(SettingsContext);
   const { setToastContext } = useContext<IToastContext>(ToastContext);
+
+  const [confirmModalVisible, setConfirmModalVisible] = useState<boolean>(false);
+  const [logoutModalVisible, setLogoutModalVisible] = useState<boolean>(false);
+
   const navigation = useNavigation<RootStackNavigationProp>();
 
   const handleLogout = async () => {
@@ -62,14 +67,27 @@ export const ModifySettings: FC<IModifySettingsProps> = () => {
               </View>
             </View>
             <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-              {dirty && <ActionButton title="save" onPress={handleSubmit} />}
+              {dirty && <ActionButton title="save" onPress={() => setConfirmModalVisible(true)} />}
               <View style={{ marginTop: 6 }}>
-                <ActionButton title="log out" onPress={handleLogout} theme={Palette.Danger} />
+                <ActionButton title="log out" onPress={() => setLogoutModalVisible(true)} theme={Palette.Danger} />
               </View>
             </View>
+            <ConfirmModal
+              visible={confirmModalVisible}
+              onSelected={(value: ConfirmModalOption) => {
+                setConfirmModalVisible(false);
+                switch (value) {
+                  case ConfirmModalOption.Confirm:
+                    handleSubmit();
+                    break;
+                }
+                setConfirmModalVisible(false);
+              }}
+            />
           </View>
         )}
       </Formik>
+      <ConfirmModal visible={logoutModalVisible} onSelected={handleLogout} />
     </RootView>
   );
 };

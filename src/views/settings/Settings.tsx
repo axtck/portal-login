@@ -8,7 +8,6 @@ import { IconButton } from '../../components/buttons/IconButton';
 import { TitleText } from '../../components/text/TitleText';
 import { appConfig } from '../../config';
 import { AppContext, IAppContext } from '../../context/AppContext';
-import { IModal, IModalContext, initialModalContext, ModalContext, ModalKey } from '../../context/ModalContext';
 import { ISettingsContext, SettingsContext } from '../../context/SettingsContext';
 import { initialDangerToast, initialSuccessToast, IToastContext, ToastContext } from '../../context/ToastContext';
 import { AppRoute } from '../../routes/types/AppRoute';
@@ -21,24 +20,18 @@ import { IUserProfileImage } from '../../types/models/UserProfileImage';
 import { Null } from '../../types/types';
 import { getStoredString } from '../../utils/storage-utils';
 import { RootView } from '../core/RootView';
+import { EditOrDeleteModal, EditOrDeleteModalOption } from '../modals/EditOrDeleteModal';
 
 interface ISettingsProps {}
 
-const profileImageModalOptions: IModal = {
-  ...initialModalContext,
-  title: 'Profile image',
-  options: [{ id: 1, name: 'edit' }],
-  key: ModalKey.SettingsProfileImage,
-};
-
 export const Settings: FC<ISettingsProps> = () => {
   const { appContext } = useContext<IAppContext>(AppContext);
-  const { modalContext, setModalContext } = useContext<IModalContext>(ModalContext);
   const { settingsContext, setSettingsContext } = useContext<ISettingsContext>(SettingsContext);
   const { setToastContext } = useContext<IToastContext>(ToastContext);
 
   const [user, setUser] = useState<Null<IUserInfo>>(null);
   const [image, setImage] = useState<Null<ImagePicker.ImagePickerResult>>(null);
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   const navigation = useNavigation<RootStackNavigationProp>();
 
@@ -62,19 +55,16 @@ export const Settings: FC<ISettingsProps> = () => {
     initializeUser().catch((e) => e);
   }, []);
 
-  useEffect(() => {
-    if (!modalContext.selectedOption || modalContext.key !== ModalKey.SettingsProfileImage) return;
-    const handlePick = async () => {
-      switch (modalContext.selectedOption?.name) {
-        case 'edit':
-          await pickImage();
-          setModalContext(initialModalContext);
-          break;
-      }
-    };
-
-    handlePick().catch((e) => e);
-  }, [modalContext.selectedOption]);
+  const handleConfirmModal = async (value: EditOrDeleteModalOption) => {
+    switch (value) {
+      case EditOrDeleteModalOption.Edit:
+        await pickImage();
+        break;
+      case EditOrDeleteModalOption.Delete:
+        break;
+    }
+    setModalVisible(false);
+  };
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -106,7 +96,7 @@ export const Settings: FC<ISettingsProps> = () => {
       <TitleText>Settings</TitleText>
       <View style={{ flex: 1 }}>
         <View style={{ flex: 2, alignItems: 'center' }}>
-          <TouchableOpacity onPress={() => setModalContext(profileImageModalOptions)}>
+          <TouchableOpacity onPress={() => setModalVisible(true)}>
             <View style={styles.imageContainer}>
               {image?.assets || activeImage ? (
                 <Image
@@ -126,6 +116,7 @@ export const Settings: FC<ISettingsProps> = () => {
           </View>
         </View>
       </View>
+      <EditOrDeleteModal onSelected={handleConfirmModal} visible={modalVisible} />
     </RootView>
   );
 };
